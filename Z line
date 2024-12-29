@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mountain Car Racing Game</title>
+  <style>
+    body { margin: 0; overflow: hidden; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+  <script src="game.js"></script>
+</body>
+</html>// Select canvas and context
+const canvas = document.createElement('canvas');
+document.body.appendChild(canvas);
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+const ctx = canvas.getContext('2d');
+
+// Variables
+let car = { x: 50, y: canvas.height - 100, speed: 5 };
+let level = 1;
+
+// Background image
+const background = new Image();
+background.src = 'taj_mahal.jpg'; // Replace with dynamic locations
+
+// Car image
+const carImage = new Image();
+carImage.src = 'car.png'; // Your car image
+
+// Key controls
+let keys = {};
+window.addEventListener('keydown', e => keys[e.key] = true);
+window.addEventListener('keyup', e => keys[e.key] = false);
+
+// Game loop
+function gameLoop() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Background
+  ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
+
+  // Car movement
+  if (keys['ArrowUp']) car.y -= car.speed;
+  if (keys['ArrowDown']) car.y += car.speed;
+  if (keys['ArrowLeft']) car.x -= car.speed;
+  if (keys['ArrowRight']) car.x += car.speed;
+
+  // Keep car within boundaries
+  car.x = Math.max(0, Math.min(canvas.width - 100, car.x));
+  car.y = Math.max(0, Math.min(canvas.height - 50, car.y));
+
+  // Draw car
+  ctx.drawImage(carImage, car.x, car.y, 100, 50);
+
+  // Level-up logic
+  if (car.x > canvas.width - 100) {
+    level++;
+    car.x = 50; // Reset position
+    background.src = nextLocation(level); // Update background
+  }
+
+  // Display level
+  ctx.fillStyle = 'white';
+  ctx.font = '20px Arial';
+  ctx.fillText(`Level: ${level}`, 10, 30);
+
+  // Recursive loop
+  requestAnimationFrame(gameLoop);
+}
+
+// Function to get the next location
+function nextLocation(level) {
+  const locations = [
+    'taj_mahal.jpg',
+    'india_gate.jpg',
+    'lal_kila.jpg',
+    'nainital.jpg',
+    'manali.jpg',
+    'kullu.jpg',
+    'atal_tunnel.jpg'
+  ];
+  return locations[(level - 1) % locations.length];
+}
+
+// Start game
+gameLoop();
